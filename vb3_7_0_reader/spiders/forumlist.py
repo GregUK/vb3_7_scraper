@@ -1,3 +1,5 @@
+from pip._vendor.pkg_resources import to_filename
+
 __author__ = 'smithg'
 
 from scrapy.contrib.spiders import CrawlSpider
@@ -7,15 +9,17 @@ from urlparse import urlparse, parse_qs
 class VbForumSpider(CrawlSpider):
     name = "s2forum_forum"
 
-    def __init__(self, domain="www.s2forum.com", http_user="", http_pass="", *args, **kwargs):
+    def __init__(self, domain="www.s2forum.com", http_user="", http_pass="", to_file=False, *args, **kwargs):
         super(VbForumSpider, self).__init__(*args, **kwargs)
         self.start_urls = ['http://{0}/forum/index.php'.format(domain)]
         self.http_user = http_user
         self.http_pass = http_pass
+        self.to_file = to_file
 
     def parse(self, response):
-        filename = response.url.split("/")[-2]
-        open(filename, 'wb').write(response.body)
+        if self.to_file:
+            filename = response.url.split("/")[-2]
+            open(filename, 'wb').write(response.body)
 
         items = []
         hxs =Selector(response)
